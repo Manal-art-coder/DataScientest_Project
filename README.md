@@ -42,7 +42,11 @@ Day : jour du mois où le contact a eu lieu
 Ce projet a été réalisé par :
 
 -Audrey Amiel
+
 -Elyse Demeulemeester
+
 -Manal Jewa
+
 -David Legrand
+
 -Manon Selle
