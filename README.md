@@ -1,2 +1,2 @@
 # DataScientest_Project
-Prediction of the success of a marketing campaign
+Prédiction du Succès d'une Campagne Marketing
