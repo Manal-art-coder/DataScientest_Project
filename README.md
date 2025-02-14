@@ -22,7 +22,7 @@ L'analyse exploratoire a révélé que les variables suivantes ont une influence
 
 Duration : durée du dernier contact avec le client
 
-Housing : statut de possession d'un logement
+Housing : statut de possession d'un prêt immobilier
 
 Age : âge du client
 
