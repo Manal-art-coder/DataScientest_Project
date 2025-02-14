@@ -21,9 +21,13 @@ Ce projet vise à prédire le succès d'une campagne marketing à l'aide de l'ap
 L'analyse exploratoire a révélé que les variables suivantes ont une influence significative sur le succès des campagnes :
 
 Duration : durée du dernier contact avec le client
+
 Housing : statut de possession d'un logement
+
 Age : âge du client
+
 Poutcome : résultat des campagnes marketing précédentes
+
 Day : jour du mois où le contact a eu lieu
 
 ## ⚖️ Modélisation
