@@ -8,7 +8,7 @@ df=pd.read_csv(url)
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
-pages=["Contexte et objectif", "Exploration du jeu de données", "Datavisulaization", "Préparation des données", "Modélisation", "Résultat et analyse"]
+pages=["Contexte et objectif", "Exploration du jeu de données", "Datavisualisation", "Préparation des données", "Modélisation", "Résultat et analyse"]
 page=st.sidebar.radio("Aller vers", pages)
 if page == pages[0] : 
   st.write("### Contexte et objectif")
@@ -35,7 +35,7 @@ if page == pages[1] :
    if st.checkbox("Afficher les NA") :
      st.dataframe(df.isna().sum())
 if page == pages[2] : 
-   st.write("### DataVisualization")
+   st.write("### DataVisualisation")
    st.write("#### Exploration des distributions des variables")
    selected_variable = st.selectbox("Sélectionnez une variable :", df.columns)
 
