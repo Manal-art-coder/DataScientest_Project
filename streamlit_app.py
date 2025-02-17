@@ -36,7 +36,7 @@ if page == pages[1] :
      st.dataframe(df.isna().sum())
 if page == pages[2] : 
    st.write("### DataVisualization")
-   st.title("Exploration des distributions des variables")
+   st.write("####Exploration des distributions des variables")
    selected_variable = st.selectbox("Sélectionnez une variable :", df.columns)
 
    if df[selected_variable].dtype in ["int64", "float64"]:  
