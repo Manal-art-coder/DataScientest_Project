@@ -20,7 +20,7 @@ La variable cible étant la souscription ou non à l’offre, nous utilisons l�
 
 À partir de données labellisées, nous cherchons à identifier les profils les plus susceptibles de souscrire, afin d’optimiser les actions marketing et réduire les coûts de la campagne.  
 
-**Le jeu de données** utilisé provient de la plateforme Kaggle et est accessible à l’adresse suivante : [https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset](#).  
+**Le jeu de données** utilisé provient de la plateforme Kaggle et est accessible à l’adresse suivante : [lien du jeu de données](#https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset).  
 
 Ce Streamlit retrace notre démarche, depuis l’exploration et le prétraitement des données jusqu’à la modélisation finale.  
 Il permet de visualiser les différentes étapes du projet, d’analyser les variables explicatives sélectionnées et de tester plusieurs algorithmes de Machine Learning afin d’identifier le modèle le plus performant.
