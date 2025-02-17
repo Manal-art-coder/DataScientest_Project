@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-df=pd.read_csv("C:\Users\manal\Desktop\Projets\bank.csv")
+df=pd.read_csv(r"C:\Users\manal\Desktop\Projets\bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
