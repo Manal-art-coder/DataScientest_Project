@@ -3,8 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-url = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/bank.csv"
-df = pd.read_csv(url)
+df=pd.read_csv(r"C:\Users\manal\Desktop\Projets\Streamlit\bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
@@ -26,15 +25,38 @@ Ce Streamlit retrace notre démarche, depuis l’exploration et le prétraitemen
 Il permet de visualiser les différentes étapes du projet, d’analyser les variables explicatives sélectionnées et de tester plusieurs algorithmes de Machine Learning afin d’identifier le modèle le plus performant.
 """)
 if page == pages[1] : 
-  st.write("### Exploration du jeu de données")
-  st.dataframe(df.head(10))
-  st.write(df.shape)
-  st.dataframe(df.describe())
-if st.checkbox("Afficher les NA") :
-  st.dataframe(df.isna().sum())
+   st.write("### Exploration du jeu de données")
+   st.dataframe(df.head(10))
+   st.write("### Taille du Dataset")
+   st.write(df.shape)
+   st.write("### Statistiques descriptives")
+   st.dataframe(df.describe())
+   if st.checkbox("Afficher les NA") :
+     st.dataframe(df.isna().sum())
 if page == pages[2] : 
-  st.write("### DataVisualization")
-  fig = plt.figure()
-  sns.countplot(x = 'deposit', data = df)
-  st.pyplot(fig)
-  
+   st.write("### DataVisualization")
+   fig, ax = plt.subplots(figsize=(8, 6))
+   df["deposit"].value_counts().plot.pie( autopct="%1.1f%%", colors=["lightpink", "lightblue"], labels=df["deposit"].value_counts().index,ax=ax)
+   ax.set_title("Répartition globale de la variable cible deposit")
+   ax.set_ylabel("")  # Suppression du label de l'axe Y
+   st.pyplot(fig)
+
+   st.title("Exploration des distributions des variables")
+   selected_variable = st.selectbox("Sélectionnez une variable :", df.columns)
+
+   if df[selected_variable].dtype in ["int64", "float64"]:  
+      st.write(f"### Distribution de {selected_variable} (Numérique)")
+      fig, ax = plt.subplots(figsize=(8, 5))
+      df[selected_variable].hist(bins=20, ax=ax, color="royalblue", edgecolor="black")
+      ax.set_xlabel(selected_variable)
+      ax.set_ylabel("Fréquence")
+      ax.set_title(f"Histogramme de {selected_variable}")
+      st.pyplot(fig)
+   else:  # Variable catégorielle
+      st.write(f"### Distribution de {selected_variable} (Catégorielle)")
+      fig, ax = plt.subplots(figsize=(8, 5))
+      df[selected_variable].value_counts().plot(kind="bar", ax=ax, color="royalblue", edgecolor="black")
+      ax.set_xlabel(selected_variable)
+      ax.set_ylabel("Nombre d'occurrences")
+      ax.set_title(f"Répartition des catégories de {selected_variable}")
+      st.pyplot(fig)
