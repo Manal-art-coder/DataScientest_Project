@@ -3,7 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-df=pd.read_csv(r"C:\Users\manal\Desktop\Projets\Streamlit\bank.csv")
+url = "https://raw.githubusercontent.com/TON_USER/TON_REPO/main/bank.csv"
+df=pd.read_csv(url)
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
