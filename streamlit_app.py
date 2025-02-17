@@ -36,12 +36,6 @@ if page == pages[1] :
      st.dataframe(df.isna().sum())
 if page == pages[2] : 
    st.write("### DataVisualization")
-   fig, ax = plt.subplots(figsize=(8, 6))
-   df["deposit"].value_counts().plot.pie( autopct="%1.1f%%", colors=["lightpink", "lightblue"], labels=df["deposit"].value_counts().index,ax=ax)
-   ax.set_title("Répartition globale de la variable cible deposit")
-   ax.set_ylabel("")  # Suppression du label de l'axe Y
-   st.pyplot(fig)
-
    st.title("Exploration des distributions des variables")
    selected_variable = st.selectbox("Sélectionnez une variable :", df.columns)
 
