@@ -23,25 +23,60 @@ df=pd.read_csv(r"C:\Users\manal\Desktop\Projets\Streamlit\bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
-pages=["Contexte & enjeux", "Présentation des données", "Visualisation des données", "Préprocessing", "Modèles ML", "Meilleur modèle", "Faites votre propre prédiction !","Conclusion & perspectives"]
+pages=["Contexte & enjeux", "Présentation des données", "Visualisation des données", "Préprocessing", "Modèles ML", "Meilleur modèle", "Faites votre propre prédiction !","Conclusion & Recommandations", "Difficultés & perspectives"]
 page=st.sidebar.radio("Aller vers", pages)
-if page == pages[0] : 
-  st.write("### Contexte & enjeux")
-  st.image(r"C:\Users\manal\Desktop\Projets\Streamlit\Screenshot 2025-02-19 111852.jpg", use_column_width=True)
-  st.write("""
-Ce projet a été réalisé dans le cadre de notre formation de **Data Analyst** avec l’organisme Datascientest.  
+import streamlit as st
 
-L’objectif est de prédire le succès d’une campagne marketing en analysant les facteurs influençant la souscription des clients à une offre spécifique.  
-La variable cible étant la souscription ou non à l’offre, nous utilisons l’apprentissage supervisé pour résoudre ce problème de classification binaire.  
+if page == pages[0]: 
+    # 🔷 Section Contexte & Enjeux
+    st.write("### 📌 Contexte & Enjeux")
+    
+    # Ajout d'une image d'illustration
+    st.image(r"C:\Users\manal\Desktop\Projets\Streamlit\Screenshot 2025-02-19 111852.jpg", use_column_width=True)
+    
+    st.write("""
+    Ce projet s’inscrit dans le cadre de notre formation de **Data Analyst** avec l’organisme **DataScientest**.  
 
-À partir de données labellisées, nous cherchons à identifier les profils les plus susceptibles de souscrire, afin d’optimiser les actions marketing et réduire les coûts de la campagne.  
+    ### 🎯 Objectif du projet  
+    L’objectif est d’analyser et prédire le succès d’une **campagne marketing bancaire** en identifiant les facteurs influençant la souscription des clients à une offre de dépôt à terme.  
 
-**Le jeu de données** utilisé provient de la plateforme Kaggle et est accessible à l’adresse suivante : [Lien vers le dataset](#https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset).  
+    ### 📊 Données utilisées  
+    - Le dataset provient de la plateforme **Kaggle**, accessible ici : [Bank Marketing Dataset](https://www.kaggle.com/datasets/janiobachmann/bank-marketing-dataset).  
+    - Il contient des informations détaillées sur les clients, les interactions passées et les résultats des campagnes marketing.  
 
-Ce Streamlit retrace notre démarche, depuis l’exploration et le prétraitement des données jusqu’à la modélisation finale.  
-Il permet de visualiser les différentes étapes du projet, d’analyser les variables explicatives sélectionnées et de tester plusieurs algorithmes de Machine Learning afin d’identifier le modèle le plus performant.
-""")
+    ### 🔍 Démarche adoptée  
+    Ce **Tableau de bord interactif Streamlit** retrace toutes les étapes du projet :  
+    1. Exploration et prétraitement des données  
+    2. Visualisation des variables explicatives  
+    3. Mise en place et comparaison de plusieurs **modèles de Machine Learning**  
+    4. Sélection du modèle le plus performant  
+    5. **Prédiction en temps réel** sur de nouvelles données  
 
+    📢 Ce projet permet ainsi de mieux comprendre les dynamiques des campagnes marketing et d'optimiser les stratégies commerciales ! 🚀
+    """)
+
+    # 🔷 Section Équipe du Projet
+    st.write("### 👥 Équipe du Projet")
+
+    # 📌 Liste des membres de l'équipe
+    team_members = [
+        {"nom": "Jewa", "prenom": "Manal", "linkedin": "https://www.linkedin.com/in/manaljewa/"},
+        {"nom": "Selle", "prenom": "Manon", "linkedin": "https://www.linkedin.com/in/manon-selle/"},
+        {"nom": "Demeulemeester", "prenom": "Elyse", "linkedin": "https://www.linkedin.com/in/elyse-demeulemeester-aa41832b7/"},
+        {"nom": "Amiel", "prenom": "Audrey", "linkedin": "https://www.linkedin.com/in/audrey-amiel/"},
+        {"nom": "Legrand", "prenom": "David", "linkedin": "https://www.linkedin.com/in/lucas-morel"}
+    ]
+
+    # 📌 Affichage des membres sur deux lignes
+    col1, col2, col3 = st.columns(3)  # Première ligne (3 colonnes)
+    col4, col5 = st.columns(2)  # Deuxième ligne (2 colonnes)
+
+    columns = [col1, col2, col3, col4, col5]
+
+    for col, member in zip(columns, team_members):
+        with col:
+            st.write(f"**{member['prenom']} {member['nom']}**")
+            st.markdown(f"[LinkedIn]({member['linkedin']})")  # Lien vers le profil LinkedIn
 
 if page == pages[1]:
     # Titre principal
@@ -56,6 +91,17 @@ if page == pages[1]:
     st.subheader("Taille du Dataset")
     st.write(f"**Nombre de lignes** : {df.shape[0]}")
     st.write(f"**Nombre de colonnes** : {df.shape[1]}")
+    st.subheader("Types des Variables dans le Dataset")
+    categorical_vars = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    numerical_vars = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
+    if st.button("Afficher les types des variables"):
+        st.dataframe(df.dtypes.reset_index().rename(columns={"index": "Variable", 0: "Type"}))
+    if st.button("Afficher les variables catégorielles"):
+        st.write("### Variables Catégorielles")
+        st.write(categorical_vars)
+    if st.button("Afficher les variables numériques"):
+        st.write("### Variables Numériques")
+        st.write(numerical_vars)    
 
     # Statistiques descriptives
     st.subheader("Statistiques Descriptives")
@@ -114,49 +160,50 @@ if page == pages[2]:
     if "deposit" in numerical_vars:
         numerical_vars.remove("deposit")
 
-    # Analyse de la variable 'deposit'
+    def categorize_data(df):
+        df = df.copy()
+        df['age'] = pd.cut(df['age'], bins=[0, 25, 35, 45, 55, 65, float('inf')], 
+                        labels=['<25', '25-35', '35-45', '45-55', '55-65', '>65'])
+        df['campaign'] = pd.cut(df['campaign'], bins=[0, 1, 2, 6, float('inf')], 
+                             labels=['1 fois', '2 fois', '3-6 fois', '>6 fois'])
+        df['previous'] = pd.cut(df['previous'], bins=[-1, 0, 1, 5, float('inf')], 
+                             labels=['jamais contacté (0)', '1 seul contact', '2 à 5 contacts', 'plus de 6 contacts'])
+        df['pdays'] = pd.cut(df['pdays'], bins=[-2, -1, 180, 365, float('inf')], 
+                          labels=['Jamais contacté (-1)', '0-6 mois', '6 mois-1 an', '> 1 an'])
+        balance_bins = pd.qcut(df['balance'], q=4, duplicates='drop')
+        balance_labels = [f"{int(interval.left)} - {int(interval.right)}" for interval in balance_bins.cat.categories]
+        df['balance'] = pd.Categorical(balance_bins, categories=balance_bins.cat.categories, ordered=True)
+        df['balance'] = df['balance'].cat.rename_categories(balance_labels)
+        duration_bins = pd.qcut(df['duration'], q=4, duplicates='drop')
+        duration_labels = [f"{int(interval.left)} - {int(interval.right)}" for interval in duration_bins.cat.categories]
+        df['duration'] = pd.Categorical(duration_bins, categories=duration_bins.cat.categories, ordered=True)
+        df['duration'] = df['duration'].cat.rename_categories(duration_labels)
+        df['day'] = pd.to_datetime(df['day'], format='%d', errors='coerce').dt.day_name()
+        return df
+    new_1 = categorize_data(df)  # Appliquer la transformation
+    categorical_vars = ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 
+                    'month', 'day', 'poutcome', 'age', 'campaign', 'previous', 'pdays', 'balance', 'duration']
     st.subheader("Analyse de la souscription ('deposit') en fonction des autres variables")
-    selected_var = st.selectbox("Choisissez une variable à comparer avec 'deposit':", categorical_vars + numerical_vars)
-
+    selected_var = st.selectbox("Choisissez une variable à comparer avec 'deposit':", categorical_vars)
     fig = go.Figure()
-
-    if selected_var in numerical_vars:
-        # Affichage d'un boxplot pour les variables numériques
-        fig.add_trace(go.Box(
-            x=df["deposit"], 
-            y=df[selected_var], 
-            name=selected_var, 
-            boxmean=True
-        ))
-        fig.update_layout(title=f"Distribution de '{selected_var}' en fonction de 'deposit'")
-        st.plotly_chart(fig)
-
-    else:
-        # Calcul des pourcentages de souscription et non-souscription
-        grouped_data = df.groupby([selected_var, "deposit"]).size().reset_index(name="count")
-        total_counts = grouped_data.groupby(selected_var)["count"].transform("sum")
-        grouped_data["percentage"] = (grouped_data["count"] / total_counts) * 100
-
-        # Affichage d'un barplot empilé pour visualiser les pourcentages
-        colors = {"yes": "#003f5c", "no": "#d45087"}
-        for deposit_value in ["yes", "no"]:
-            filtered_data = grouped_data[grouped_data["deposit"] == deposit_value]
-            fig.add_trace(go.Bar(
-                x=filtered_data[selected_var], 
-                y=filtered_data["percentage"], 
-                name=f"{selected_var} - {deposit_value}",
-                marker_color=colors[deposit_value],
-                text=filtered_data["percentage"].round(1).astype(str) + '%',
-                textposition="inside"
-            ))
-
-        fig.update_layout(
-            title=f"Pourcentage de souscription ('deposit') en fonction de '{selected_var}'",
-            barmode="stack",
-            yaxis_title="Pourcentage (%)"
-        )
-
-        st.plotly_chart(fig)
+    grouped_data = new_1.groupby([selected_var, "deposit"]).size().reset_index(name="count")
+    total_counts = grouped_data.groupby(selected_var)["count"].transform("sum")
+    grouped_data["percentage"] = (grouped_data["count"] / total_counts) * 100
+    colors = {"yes": "#003f5c", "no": "#d45087"}
+    for deposit_value in ["yes", "no"]:
+        filtered_data = grouped_data[grouped_data["deposit"] == deposit_value]
+        fig.add_trace(go.Bar(
+        x=filtered_data[selected_var], 
+        y=filtered_data["percentage"], 
+        name=f"{deposit_value}",
+        marker_color=colors[deposit_value],
+        text=filtered_data["percentage"].round(1).astype(str) + '%',
+        textposition="inside"))
+    fig.update_layout(
+    title=f"Pourcentage de souscription ('deposit') en fonction de '{selected_var}'",
+    barmode="stack",
+    yaxis_title="Pourcentage (%)")
+    st.plotly_chart(fig)
 
 if page == pages[3]:
     st.title("Préprocessing 🛠️")
@@ -344,7 +391,6 @@ if page == pages[6]:
        scaler = joblib.load("scaler.pkl")
        numerical_columns = ['age', 'balance', 'day', 'duration']
        user_data[numerical_columns] = scaler.transform(user_data[numerical_columns])
-       st.write("🧐 Données après transformation :", user_data)
        if st.button("🔍 Prédire"):
            prediction = model.predict(user_data)[0]
            st.write("🔮 Prédiction brute :", prediction)
@@ -456,13 +502,67 @@ if page == pages[6]:
         except Exception as e:
             st.error(f"❌ Erreur lors de la prédiction : {e}")
 
-if page == pages[7] : 
-  st.write("### Conclusion & perspectives")
-  st.write("""Le modèle final utilisé ici est celui qui a montré les meilleures performances après optimisation des hyperparamètres. Cependant, pour garantir des prédictions optimales, il est impératif d'appliquer un seuil de décision de 0,45 avant d'interpréter les résultats.
+if page == pages[7]:
+    st.write("## 📊 Conclusion & Recommandations")
 
-📌 Attention : La variable "duration" peut entraîner une fuite de données, car la durée de l’appel n’est pas connue avant qu’il ait lieu. Pour une utilisation en conditions réelles, il est recommandé de ne pas l’inclure dans la prédiction.
-           
-💡 Votre avis compte ! Pour toute suggestion ou amélioration, n’hésitez pas à nous contacter. 🚀""")
+    st.write("### 🔎 Résumé des résultats")
+    st.write("""
+    Notre modèle final a confirmé plusieurs tendances observées lors de la phase d'exploration des données :
+    - **Durée du dernier contact 📞** : Très corrélée avec la souscription, mais problématique pour une prédiction en amont.
+    - **Période des campagnes 📅** : Mai est inefficace, alors que septembre et octobre sont plus favorables.
+    - **Ciblage par âge 👥** : Les jeunes (-25 ans) et les seniors (+65 ans) souscrivent davantage.
+    - **Jours de contact optimaux 📆** : mardi, mercredi et jeudi offrent les meilleurs taux de conversion.
+    - **Solde du compte 💰** : Plus il est élevé, plus la souscription est probable.
+    - **Impact des prêts 🏦** : Les clients avec un prêt immobilier sont moins enclins à souscrire à un DAT.
+    """)
+
+    st.write("### 📌 Recommandations stratégiques")
+    st.markdown("""
+    🔹 **Optimisation des campagnes**  
+    - Cibler les campagnes en septembre/octobre plutôt qu'en mai.  
+    - Planifier les appels principalement en milieu de semaine.  
+      
+    🔹 **Amélioration du ciblage client**  
+    - Segmenter les clients en fonction de leur solde bancaire.  
+    - Privilégier les profils ayant répondu positivement à des campagnes précédentes.  
+      
+    🔹 **Stratégie d’engagement client**  
+    - Former les équipes pour prolonger la durée des appels et améliorer le taux de conversion.  
+    - Personnaliser les offres en fonction des besoins spécifiques des tranches d’âge.  
+    """)
+
+if page ==pages[8]:
+    st.write("## 🚀 Difficultés rencontrées & Perspectives")
+    st.write("""
+    🔹 **Utilisation de la variable duration**  
+    - Variable informative mais inutilisable en amont.  
+    - Son retrait a diminué les performances du modèle.  
+      
+    🔹 **Modélisation et choix des algorithmes**  
+    - Test de plusieurs modèles avant d’identifier le meilleur.  
+    - Difficulté à choisir entre prédiction avant ou après le premier contact.  
+      
+    🔹 **Problèmes de données**  
+    - Valeurs inconnues dans certaines variables (`poutcome`, `education`).  
+    - Déséquilibre des campagnes passées compliquant l'analyse des résultats.  
+    """)
+
+    st.write("### 🎯 Bilan et résultats obtenus")
+    st.markdown("""
+    - **Modèle final** : Précision **85%** et F1-score **0.83**.  
+    - **Benchmark** : Résultats compétitifs par rapport aux standards du secteur bancaire.  
+    - **Impact business** : Amélioration de l’efficacité des campagnes marketing.  
+    """)
+
+    st.write("### 🔍 Pistes d’amélioration")
+    st.markdown("""
+    ✅ **Améliorer les variables** en créant de nouvelles interactions (âge & statut pro, solde & prêt).   
+    ✅ **Tester l’utilisation de duration** en la prédisant dans un modèle séparé.  
+    ✅ **Test A/B** pour valider les recommandations sur un échantillon réel.  
+    """)
+    st.success("Ce projet nous a permis d'explorer des problématiques réelles de Machine Learning appliquées au marketing bancaire et de mieux comprendre l'importance des variables temporelles dans la prédiction.")
+
+
 
       
 
