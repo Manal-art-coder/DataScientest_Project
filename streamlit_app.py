@@ -468,24 +468,56 @@ if page == pages[6]:
     except Exception as e:
         st.error(f"❌ Erreur : {e}")
 
-    # 📥 Upload de fichier CSV
     uploaded_file = st.file_uploader("📥 Téléchargez votre fichier CSV", type=["csv"])
-
     if uploaded_file is not None:
         user_data = pd.read_csv(uploaded_file)
         st.write("✅ Données chargées avec succès !")
-
-        # Traitement des valeurs inconnues
         user_data.replace(["unknown", "Unknown", "UNKNOWN", "other", "Other", "OTHER"], np.nan, inplace=True)
         if 'pdays' in user_data.columns:
             user_data['pdays_contacted'] = (user_data['pdays'] != -1).astype(int)
+            columns_to_drop = ['default', 'contact', 'previous', 'pdays']
+            user_data.drop(columns=[col for col in columns_to_drop if col in user_data.columns], inplace=True)
+            def categorize_campaign(campaign):
+                if campaign == 1:
+                    return '1 fois'
+                elif campaign == 2:
+                    return '2 fois'
+                elif 3 <= campaign <= 6:
+                    return '3-6 fois'
+                else:
+                return '> 6 fois'
 
-        # Suppression de colonnes inutiles
-        columns_to_drop = ['default', 'contact', 'previous', 'pdays']
-        user_data.drop(columns=[col for col in columns_to_drop if col in user_data.columns], inplace=True)
+        if 'campaign' in user_data.columns:
+            user_data['campaign'] = user_data['campaign'].apply(categorize_campaign)
 
-        # Encodage et transformation
+        month_mapping = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+                         'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
+        if 'month' in user_data.columns:
+            user_data['month'] = user_data['month'].str.lower().map(month_mapping)
+
+        education_mapping = {'primary': 0, 'secondary': 1, 'tertiary': 2}
+        if 'education' in user_data.columns:
+            user_data['education'] = user_data['education'].str.lower().map(education_mapping)
+
+        for col in ['housing', 'loan']:
+            if col in user_data.columns:
+                user_data[col].replace({'no': 0, 'yes': 1}, inplace=True)
+
+        if 'duration' in user_data.columns:
+            user_data['duration'] = user_data['duration'] / 60
+            user_data['duration'] = user_data['duration'].round(2)
+
+        if 'poutcome' in user_data.columns:
+            user_data['poutcome'].fillna('missing', inplace=True)
+
+        if 'housing' in user_data.columns and 'loan' in user_data.columns:
+            user_data['housing_loan_interaction'] = user_data['housing'] & user_data['loan']
+
         categorical_imputer = SimpleImputer(strategy='most_frequent')
+        cat_cols = ['job', 'education']
+        if all(col in user_data.columns for col in cat_cols):
+            user_data[cat_cols] = categorical_imputer.fit_transform(user_data[cat_cols])
+
         one_hot_cols = ['job', 'marital', 'poutcome', 'campaign']
         encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
 
@@ -496,24 +528,38 @@ if page == pages[6]:
 
         numerical_columns = ['age', 'balance', 'day', 'duration']
         scaler = RobustScaler()
+
         if all(col in user_data.columns for col in numerical_columns):
             user_data[numerical_columns] = scaler.fit_transform(user_data[numerical_columns])
-
+      
+        cols_to_remove = [
+        'loan', 'housing_loan_interaction', 'job_blue-collar',
+        'job_entrepreneur', 'job_housemaid', 'job_management', 'job_retired',
+        'job_self-employed', 'job_services', 'job_student', 'job_technician',
+        'job_unemployed', 'marital_married', 'marital_single']
+        user_data.drop(columns=[col for col in cols_to_remove if col in user_data.columns], inplace=True)
+   
         st.write("📊 Données après prétraitement :")
         st.dataframe(user_data.head())
 
-        # Téléchargement des données transformées
         csv_buffer = io.BytesIO()
         user_data.to_csv(csv_buffer, index=False)
-        csv_buffer.seek(0)
-        st.download_button(label="📥 Télécharger les données prétraitées", data=csv_buffer, file_name="transformed_data.csv", mime="text/csv")
+        csv_buffer.seek(0)  # Repositionner le curseur au début du fichier
+        st.download_button(label="📥 Télécharger les données prétraitées",data=csv_buffer, file_name="transformed_data.csv", mime="text/csv")
 
-        # Prédiction sur les données chargées
+        #entrainement 
         try:
             prediction = model.predict(user_data)
             user_data["Prédiction"] = ["Souscrit ✅" if p == 1 else "Ne souscrit pas ❌" for p in prediction]
             st.dataframe(user_data)
-
+            csv_buffer = io.BytesIO()
+            user_data.to_csv(csv_buffer, index=False)
+            csv_buffer.seek(0)
+            st.download_button(
+            label="📥 Télécharger les prédictions",
+            data=csv_buffer,
+            file_name="predictions.csv",
+            mime="text/csv")
         except Exception as e:
             st.error(f"❌ Erreur lors de la prédiction : {e}")
 
