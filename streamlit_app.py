@@ -18,14 +18,12 @@ import joblib
 from sklearn.utils.validation import check_is_fitted
 import os
 
-
 df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
 pages=["Contexte & enjeux", "Présentation des données", "Visualisation des données", "Préprocessing", "Modèles ML", "Meilleur modèle", "Faites votre propre prédiction !","Conclusion & Recommandations", "Difficultés & perspectives"]
 page=st.sidebar.radio("Aller vers", pages)
-import streamlit as st
 
 if page == pages[0]: 
     # 🔷 Section Contexte & Enjeux
@@ -117,13 +115,8 @@ if page == pages[1]:
         else:
             st.dataframe(missing_values[missing_values > 0])
 
-# Vérification de la page actuelle
-
 if page == pages[2]:
-    # Titre principal
     st.title("Visualisation des Données 📊")
-
-    # Sélection de la variable à explorer
     st.subheader("Exploration des distributions des variables")
     selected_variable = st.selectbox("Sélectionnez une variable :", df.columns)
 
@@ -254,21 +247,20 @@ if page == pages[4]:
         model_names = [f.replace(".pkl", "") for f in model_files]
         selected_model_name = st.selectbox("Choisissez un modèle :", model_names)
         selected_model_file = MODEL_DIR_URL + selected_model_name + ".pkl"  # ✅ Construire l'URL complète
-    try:
-        response = requests.get(selected_model_file)
-        if response.status_code == 200:
-            selected_model = joblib.load(BytesIO(response.content))
-            st.success(f"✅ Modèle {selected_model_name} chargé avec succès !")
-        else:
-            st.error(f"❌ Erreur {response.status_code} lors du chargement de {selected_model_file}")
+        try:
+            response = requests.get(selected_model_file)
+            if response.status_code == 200:
+                selected_model = joblib.load(BytesIO(response.content))
+                st.success(f"✅ Modèle {selected_model_name} chargé avec succès !")
+            else:
+                st.error(f"❌ Erreur {response.status_code} lors du chargement de {selected_model_file}")
+                selected_model = None
+        except Exception as e:
+            st.error(f"❌ Erreur lors du chargement du modèle {selected_model_name} : {e}")
             selected_model = None
-    except Exception as e:
-        st.error(f"❌ Erreur lors du chargement du modèle {selected_model_name} : {e}")
-        selected_model = None
-
-            st.write(f"### Scores du modèle {selected_model_name}")
-
-            SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/cross_val_results.csv"
+        
+        st.write(f"### Scores du modèle {selected_model_name}")
+    SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/cross_val_results.csv"
     try:
         response = requests.get(SCORES_FILE_URL)
         if response.status_code == 200:
