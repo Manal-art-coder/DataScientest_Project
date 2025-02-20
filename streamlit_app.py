@@ -19,7 +19,7 @@ from sklearn.utils.validation import check_is_fitted
 import os
 
 
-df=pd.read_csv(r"C:\Users\manal\Desktop\Projets\Streamlit\bank.csv")
+df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
@@ -32,7 +32,7 @@ if page == pages[0]:
     st.write("### 📌 Contexte & Enjeux")
     
     # Ajout d'une image d'illustration
-    st.image(r"C:\Users\manal\Desktop\Projets\Streamlit\Screenshot 2025-02-19 111852.jpg", use_column_width=True)
+    st.image(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/Screenshot 2025-02-19 111852.jpg", use_column_width=True)
     
     st.write("""
     Ce projet s’inscrit dans le cadre de notre formation de **Data Analyst** avec l’organisme **DataScientest**.  
@@ -230,7 +230,7 @@ if page == pages[3]:
     
     # Affichage du dataset après nettoyage
     st.write("### Après nettoyage")
-    df_clean=pd.read_csv("df_clean.csv")
+    df_clean=pd.read_csv("https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/df_clean.csv")
     st.dataframe(df_clean.head())
     
 import os
