@@ -230,7 +230,6 @@ import os
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
-import streamlit as st
 
 if page == pages[4]:
     st.title("Modèles de Machine Learning 📥")
@@ -239,14 +238,16 @@ if page == pages[4]:
     Vous pouvez comparer plusieurs modèles et voir leurs scores de validation croisée.""")
 
     MODEL_DIR_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/Models/"
-    model_files = ["AdaBoostClassifier.pkl", "BaggingClassifier.pkl", "DecisionTreeClassifier.pkl","GradientBoostingClassifier.pkl", "LogisticRegression.pkl", "RandomForestClassifier.pkl"] 
-    
+    model_files = ["AdaBoostClassifier.pkl", "BaggingClassifier.pkl", "DecisionTreeClassifier.pkl",
+                   "GradientBoostingClassifier.pkl", "LogisticRegression.pkl", "RandomForestClassifier.pkl"]
+
     if not model_files:
         st.error("❌ Aucun modèle trouvé. Assurez-vous que les fichiers sont bien sur GitHub.")
     else:
         model_names = [f.replace(".pkl", "") for f in model_files]
         selected_model_name = st.selectbox("Choisissez un modèle :", model_names)
         selected_model_file = MODEL_DIR_URL + selected_model_name + ".pkl"  # ✅ Construire l'URL complète
+
         try:
             response = requests.get(selected_model_file)
             if response.status_code == 200:
@@ -258,19 +259,21 @@ if page == pages[4]:
         except Exception as e:
             st.error(f"❌ Erreur lors du chargement du modèle {selected_model_name} : {e}")
             selected_model = None
-        
+
         st.write(f"### Scores du modèle {selected_model_name}")
+
     SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/cross_val_results.csv"
     try:
         response = requests.get(SCORES_FILE_URL)
         if response.status_code == 200:
-            cross_val_df = pd.read_csv(SCORES_FILE_URL)
+            cross_val_df = pd.read_csv(BytesIO(response.content))  # ✅ Lire correctement le CSV
             scores = cross_val_df[cross_val_df['Model'] == selected_model_name]
             st.dataframe(scores)
+
             st.write("### 📊 Comparaison des modèles")
             fig, ax = plt.subplots(figsize=(8, 5))  # Ajuster la taille du graphique
             cross_val_df.plot(x="Model", y=["Mean Recall", "Mean Precision", "Mean F1"], 
-                          kind="bar", ax=ax, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
+                              kind="bar", ax=ax, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
             ax.set_xlabel("Modèles")
             ax.set_ylabel("Score")
             ax.set_title("Comparaison des scores des modèles")
@@ -279,8 +282,10 @@ if page == pages[4]:
             st.pyplot(fig)
         else:
             st.error(f"❌ Erreur {response.status_code} : impossible de charger les résultats.")
-     except Exception as e:
-         st.error(f"❌ Erreur lors du chargement du fichier des scores : {e}")
+
+    except Exception as e:
+        st.error(f"❌ Erreur lors du chargement du fichier des scores : {e}")
+
         
 if page==pages[5]:
     st.title("Meilleur modèle 📥")
