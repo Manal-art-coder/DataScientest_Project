@@ -485,7 +485,7 @@ if page == pages[6]:
                 elif 3 <= campaign <= 6:
                     return '3-6 fois'
                 else:
-                return '> 6 fois'
+            return '> 6 fois'
 
         if 'campaign' in user_data.columns:
             user_data['campaign'] = user_data['campaign'].apply(categorize_campaign)
