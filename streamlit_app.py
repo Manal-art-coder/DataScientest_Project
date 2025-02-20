@@ -33,7 +33,7 @@ if page == pages[0]:
     st.write("### 📌 Contexte & Enjeux")
     
     # Ajout d'une image d'illustration
-    st.image(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/Screenshot 2025-02-19 111852.jpg", use_column_width=True)
+    st.image(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/Screenshot 2025-02-19 111852.jpg", use_container_width=True)
     
     st.write("""
     Ce projet s’inscrit dans le cadre de notre formation de **Data Analyst** avec l’organisme **DataScientest**.  
@@ -289,32 +289,35 @@ if page == pages[4]:
     except Exception as e:
         st.error(f"❌ Erreur lors du chargement du fichier des scores : {e}")
 
-        
-if page==pages[5]:
+
+if page == pages[5]:
     st.title("Meilleur modèle 📥")
     BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/"
     files = {
-    "model": "final_model.pkl",
-    "performance": "model_performance.csv",
-    "conf_matrix_before": "conf_matrix_before.npy",
-    "conf_matrix_after": "conf_matrix_after.npy",
-    "conf_matrix_optimal": "conf_matrix_optimal.npy",
-    "feat_importance_before": "feature_importance_before.csv",
-    "feat_importance_after": "feature_importance_after.csv",
-    "y_probs": "y_probs.npy",
-    "y_test": "y_test.npy"}
+        "model": "final_model.pkl",
+        "performance": "model_performance.csv",
+        "conf_matrix_before": "conf_matrix_before.npy",
+        "conf_matrix_after": "conf_matrix_after.npy",
+        "conf_matrix_optimal": "conf_matrix_optimal.npy",
+        "feat_importance_before": "feature_importance_before.csv",
+        "feat_importance_after": "feature_importance_after.csv",
+        "y_probs": "y_probs.npy",
+        "y_test": "y_test.npy",
+    }
+
     def load_file(url, is_numpy=False, is_pkl=False):
         response = requests.get(url)
         if response.status_code == 200:
             if is_numpy:
-                return np.load(response.raw, allow_pickle=True)
+                return np.load(BytesIO(response.content), allow_pickle=True)
             elif is_pkl:
-                return joblib.load(response.raw)
+                with BytesIO(response.content) as file:
+                    return joblib.load(file)  # Correction ici
             else:
-                return pd.read_csv(url)
+                return pd.read_csv(BytesIO(response.content))
         else:
             st.error(f"❌ Erreur {response.status_code} : impossible de charger {url}")
-        return None
+            return None
 
     # 🔍 Chargement des fichiers
     model = load_file(BASE_URL + files["model"], is_pkl=True)
@@ -388,6 +391,7 @@ if page==pages[5]:
             ax.set_title('Courbe ROC')
             ax.legend()
             st.pyplot(fig)
+
 
 
 if page == pages[6]:
