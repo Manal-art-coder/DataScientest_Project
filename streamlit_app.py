@@ -477,15 +477,15 @@ if page == pages[6]:
             user_data['pdays_contacted'] = (user_data['pdays'] != -1).astype(int)
             columns_to_drop = ['default', 'contact', 'previous', 'pdays']
             user_data.drop(columns=[col for col in columns_to_drop if col in user_data.columns], inplace=True)
-            def categorize_campaign(campaign):
-                if campaign == 1:
-                    return '1 fois'
-                elif campaign == 2:
-                    return '2 fois'
-                elif 3 <= campaign <= 6:
-                    return '3-6 fois'
-                else:
-            return '> 6 fois'
+        def categorize_campaign(campaign):
+            if campaign == 1:
+                return '1 fois'
+            elif campaign == 2:
+                return '2 fois'
+            elif 3 <= campaign <= 6:
+                return '3-6 fois'
+            else:
+                return '> 6 fois'
 
         if 'campaign' in user_data.columns:
             user_data['campaign'] = user_data['campaign'].apply(categorize_campaign)
