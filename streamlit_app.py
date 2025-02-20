@@ -385,113 +385,100 @@ if page==pages[5]:
             ax.set_title('Courbe ROC')
             ax.legend()
             st.pyplot(fig)
-            
+
+
 if page == pages[6]:
-   st.subheader("📝 Entrez les caractéristiques du client :")
-   age = st.number_input("Âge", min_value=18, max_value=100, value=30)
-   education = st.selectbox("Niveau d'éducation", options=["primary", "secondary", "tertiary"])
-   balance = st.number_input("Solde du compte bancaire", value=0.0)
-   housing = st.radio("Possède un prêt immobilier ?", options=["Oui", "Non"])
-   day = st.number_input("Jour du contact", min_value=1, max_value=31, value=15)
-   month = st.selectbox("Mois du contact", options=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
-   duration = st.number_input("Durée de l'appel (en secondes)", min_value=0, value=100)
-   poutcome = st.radio("Résultat de la campagne précédente ?", options=["Success", "Failure", "missing"])
-   pdays_contacted = st.radio("Déjà contacté ?", options=["Oui", "Non"])
-   campaign = st.selectbox("Nombre de contacts durant cette campagne", options=["1 fois", "2 fois", "3-6 fois", "> 6 fois"])
-   education_mapping = {"primary": 0, "secondary": 1, "tertiary": 2}
-   education = education_mapping[education]
-   housing = 1 if housing == "Oui" else 0
-   pdays_contacted = 1 if pdays_contacted == "Oui" else 0
-   month_mapping = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
-                 'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
-   month = month_mapping[month]
-   user_data = pd.DataFrame([[age, education, balance, housing, day, month, duration, pdays_contacted, campaign, poutcome]],
-                         columns=['age', 'education', 'balance', 'housing', 'day', 'month', 'duration', 'pdays_contacted', 'campaign', 'poutcome'])
-   encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
-   one_hot_cols = ['campaign', 'poutcome']
-   encoded_data = encoder.fit_transform(user_data[one_hot_cols])
-   encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(one_hot_cols))
-   user_data = pd.concat([user_data.drop(columns=one_hot_cols), encoded_df], axis=1)
-   try:
-       main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/"
-       model_path = os.path.join(main_dir, "final_model.pkl")
-       scaler_path = os.path.join(main_dir, "scaler.pkl")
-       model = joblib.load(model_path)
-       expected_columns = model.feature_names_in_
-       for col in expected_columns:
-           if col not in user_data.columns:
-               user_data[col] = 0
+    st.title("🔍 Prédiction de souscription d'un client à un compte à terme")
+
+    st.subheader("📝 Entrez les caractéristiques du client :")
+    age = st.number_input("Âge", min_value=18, max_value=100, value=30)
+    education = st.selectbox("Niveau d'éducation", options=["primary", "secondary", "tertiary"])
+    balance = st.number_input("Solde du compte bancaire", value=0.0)
+    housing = st.radio("Possède un prêt immobilier ?", options=["Oui", "Non"])
+    day = st.number_input("Jour du contact", min_value=1, max_value=31, value=15)
+    month = st.selectbox("Mois du contact", options=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+    duration = st.number_input("Durée de l'appel (en secondes)", min_value=0, value=100)
+    poutcome = st.radio("Résultat de la campagne précédente ?", options=["Success", "Failure", "missing"])
+    pdays_contacted = st.radio("Déjà contacté ?", options=["Oui", "Non"])
+    campaign = st.selectbox("Nombre de contacts durant cette campagne", options=["1 fois", "2 fois", "3-6 fois", "> 6 fois"])
+
+    # Mapping des variables catégoriques
+    education_mapping = {"primary": 0, "secondary": 1, "tertiary": 2}
+    month_mapping = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+                     'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
+    
+    education = education_mapping[education]
+    housing = 1 if housing == "Oui" else 0
+    pdays_contacted = 1 if pdays_contacted == "Oui" else 0
+    month = month_mapping[month]
+
+    # Création du DataFrame utilisateur
+    user_data = pd.DataFrame([[age, education, balance, housing, day, month, duration, pdays_contacted, campaign, poutcome]],
+                             columns=['age', 'education', 'balance', 'housing', 'day', 'month', 'duration', 'pdays_contacted', 'campaign', 'poutcome'])
+
+    # One-Hot Encoding
+    one_hot_cols = ['campaign', 'poutcome']
+    encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
+
+    encoded_data = encoder.fit_transform(user_data[one_hot_cols])
+    encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(one_hot_cols))
+    user_data = pd.concat([user_data.drop(columns=one_hot_cols), encoded_df], axis=1)
+
+    # Chargement du modèle et du scaler depuis GitHub
+    try:
+        main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/"
+        model_url = main_dir + "final_model.pkl"
+        scaler_url = main_dir + "scaler.pkl"
+
+        # Télécharger le modèle
+        response = requests.get(model_url)
+        response.raise_for_status()
+        model = joblib.load(BytesIO(response.content))
+
+        # Ajouter les colonnes manquantes
+        expected_columns = model.feature_names_in_
+        for col in expected_columns:
+            if col not in user_data.columns:
+                user_data[col] = 0
         user_data = user_data[expected_columns]
-        
-       scaler = joblib.load(scaler_path)
-       numerical_columns = ['age', 'balance', 'day', 'duration']
-       existing_numerical_columns = [col for col in numerical_columns if col in user_data.columns]
-       user_data[existing_numerical_columns] = scaler.transform(user_data[existing_numerical_columns])
-       if st.button("🔍 Prédire"):
-           prediction = model.predict(user_data)[0]
-           st.write("🔮 Prédiction brute :", prediction)
-           result = "✅ Le client VA souscrire" if prediction == 1 else "❌ Le client NE souscrira PAS"
-           st.success(result)
-   except Exception as e:
-      st.error(f"❌ Erreur : {e}")
 
-   import io
-   st.title("🔍 Prédiction de souscription d'un client à un compte à terme")
+        # Télécharger et appliquer le scaler
+        response = requests.get(scaler_url)
+        response.raise_for_status()
+        scaler = joblib.load(BytesIO(response.content))
 
-   uploaded_file = st.file_uploader("📥 Téléchargez votre fichier CSV", type=["csv"])
+        numerical_columns = ['age', 'balance', 'day', 'duration']
+        existing_numerical_columns = [col for col in numerical_columns if col in user_data.columns]
+        user_data[existing_numerical_columns] = scaler.transform(user_data[existing_numerical_columns])
 
-   if uploaded_file is not None:
+        # Prédiction
+        if st.button("🔍 Prédire"):
+            prediction = model.predict(user_data)[0]
+            st.write("🔮 Prédiction brute :", prediction)
+            result = "✅ Le client VA souscrire" if prediction == 1 else "❌ Le client NE souscrira PAS"
+            st.success(result)
+
+    except Exception as e:
+        st.error(f"❌ Erreur : {e}")
+
+    # 📥 Upload de fichier CSV
+    uploaded_file = st.file_uploader("📥 Téléchargez votre fichier CSV", type=["csv"])
+
+    if uploaded_file is not None:
         user_data = pd.read_csv(uploaded_file)
         st.write("✅ Données chargées avec succès !")
 
+        # Traitement des valeurs inconnues
         user_data.replace(["unknown", "Unknown", "UNKNOWN", "other", "Other", "OTHER"], np.nan, inplace=True)
         if 'pdays' in user_data.columns:
             user_data['pdays_contacted'] = (user_data['pdays'] != -1).astype(int)
 
+        # Suppression de colonnes inutiles
         columns_to_drop = ['default', 'contact', 'previous', 'pdays']
         user_data.drop(columns=[col for col in columns_to_drop if col in user_data.columns], inplace=True)
 
-        def categorize_campaign(campaign):
-            if campaign == 1:
-                return '1 fois'
-            elif campaign == 2:
-                return '2 fois'
-            elif 3 <= campaign <= 6:
-                return '3-6 fois'
-            else:
-                return '> 6 fois'
-
-        if 'campaign' in user_data.columns:
-            user_data['campaign'] = user_data['campaign'].apply(categorize_campaign)
-
-        month_mapping = {'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
-                         'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12}
-        if 'month' in user_data.columns:
-            user_data['month'] = user_data['month'].str.lower().map(month_mapping)
-
-        education_mapping = {'primary': 0, 'secondary': 1, 'tertiary': 2}
-        if 'education' in user_data.columns:
-            user_data['education'] = user_data['education'].str.lower().map(education_mapping)
-
-        for col in ['housing', 'loan']:
-            if col in user_data.columns:
-                user_data[col].replace({'no': 0, 'yes': 1}, inplace=True)
-
-        if 'duration' in user_data.columns:
-            user_data['duration'] = user_data['duration'] / 60
-            user_data['duration'] = user_data['duration'].round(2)
-
-        if 'poutcome' in user_data.columns:
-            user_data['poutcome'].fillna('missing', inplace=True)
-
-        if 'housing' in user_data.columns and 'loan' in user_data.columns:
-            user_data['housing_loan_interaction'] = user_data['housing'] & user_data['loan']
-
+        # Encodage et transformation
         categorical_imputer = SimpleImputer(strategy='most_frequent')
-        cat_cols = ['job', 'education']
-        if all(col in user_data.columns for col in cat_cols):
-            user_data[cat_cols] = categorical_imputer.fit_transform(user_data[cat_cols])
-
         one_hot_cols = ['job', 'marital', 'poutcome', 'campaign']
         encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
 
@@ -502,39 +489,24 @@ if page == pages[6]:
 
         numerical_columns = ['age', 'balance', 'day', 'duration']
         scaler = RobustScaler()
-
         if all(col in user_data.columns for col in numerical_columns):
             user_data[numerical_columns] = scaler.fit_transform(user_data[numerical_columns])
-      
-        cols_to_remove = [
-        'loan', 'housing_loan_interaction', 'job_blue-collar',
-        'job_entrepreneur', 'job_housemaid', 'job_management', 'job_retired',
-        'job_self-employed', 'job_services', 'job_student', 'job_technician',
-        'job_unemployed', 'marital_married', 'marital_single']
-        user_data.drop(columns=[col for col in cols_to_remove if col in user_data.columns], inplace=True)
-   
+
         st.write("📊 Données après prétraitement :")
         st.dataframe(user_data.head())
 
+        # Téléchargement des données transformées
         csv_buffer = io.BytesIO()
         user_data.to_csv(csv_buffer, index=False)
-        csv_buffer.seek(0)  # Repositionner le curseur au début du fichier
-        st.download_button(label="📥 Télécharger les données prétraitées",data=csv_buffer, file_name="transformed_data.csv", mime="text/csv")
+        csv_buffer.seek(0)
+        st.download_button(label="📥 Télécharger les données prétraitées", data=csv_buffer, file_name="transformed_data.csv", mime="text/csv")
 
-        #entrainement 
+        # Prédiction sur les données chargées
         try:
-            model = joblib.load("final_model.pkl")
             prediction = model.predict(user_data)
             user_data["Prédiction"] = ["Souscrit ✅" if p == 1 else "Ne souscrit pas ❌" for p in prediction]
             st.dataframe(user_data)
-            csv_buffer = io.BytesIO()
-            user_data.to_csv(csv_buffer, index=False)
-            csv_buffer.seek(0)
-            st.download_button(
-            label="📥 Télécharger les prédictions",
-            data=csv_buffer,
-            file_name="predictions.csv",
-            mime="text/csv")
+
         except Exception as e:
             st.error(f"❌ Erreur lors de la prédiction : {e}")
 
