@@ -245,116 +245,150 @@ if page == pages[4]:
     st.write("""Sélectionnez un modèle de Machine Learning entraîné et consultez ses performances.  
     Vous pouvez comparer plusieurs modèles et voir leurs scores de validation croisée.""")
 
-    # 📂 Vérifier que le dossier "Models" existe
-    model_dir = "Models"
-    if not os.path.exists(model_dir):
-        st.error(f"❌ Le dossier '{model_dir}' n'existe pas. Vérifiez votre structure de fichiers.")
+    MODEL_DIR_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/Models/"
+    model_files = ["AdaBoostClassifier.pkl", "BaggingClassifier.pkl", "DecisionTreeClassifier.pkl","GradientBoostingClassifier.pkl", "LogisticRegression.pkl", "RandomForestClassifier.pkl"] 
+    
+    if not model_files:
+        st.error("❌ Aucun modèle trouvé. Assurez-vous que les fichiers sont bien sur GitHub.")
     else:
-        # 📄 Lister les modèles disponibles
-        model_files = [f for f in os.listdir(model_dir) if f.endswith('.pkl')]
-
-        if not model_files:
-            st.error("❌ Aucun modèle trouvé. Assurez-vous d'avoir déplacé les fichiers dans ce dossier.")
+        model_names = [f.replace(".pkl", "") for f in model_files]
+        selected_model_name = st.selectbox("Choisissez un modèle :", model_names)
+        selected_model_file = MODEL_DIR_URL + selected_model_name + ".pkl"  # ✅ Construire l'URL complète
+    try:
+        response = requests.get(selected_model_file)
+        if response.status_code == 200:
+            selected_model = joblib.load(BytesIO(response.content))
+            st.success(f"✅ Modèle {selected_model_name} chargé avec succès !")
         else:
-            # 🛠 Retirer l'extension ".pkl" pour l'affichage
-            model_names = [f.replace(".pkl", "") for f in model_files]
-
-            # 📌 Sélection de modèle
-            selected_model_name = st.selectbox("Choisissez un modèle :", model_names)
-            selected_model_file = os.path.join(model_dir, selected_model_name + ".pkl")  # ✅ Ajouter le chemin complet
-
-            # 🔍 Charger le modèle
-            selected_model = joblib.load(selected_model_file)
+            st.error(f"❌ Erreur {response.status_code} lors du chargement de {selected_model_file}")
+            selected_model = None
+    except Exception as e:
+        st.error(f"❌ Erreur lors du chargement du modèle {selected_model_name} : {e}")
+        selected_model = None
 
             st.write(f"### Scores du modèle {selected_model_name}")
 
-            # 📊 Vérifier l'existence du fichier de résultats
-            scores_file = "cross_val_results.csv"
-            if os.path.exists(scores_file):
-                cross_val_df = pd.read_csv(scores_file)
-
-                # 🔎 Filtrer les scores du modèle sélectionné
-                scores = cross_val_df[cross_val_df['Model'] == selected_model_name]
-                st.dataframe(scores)
-
-                # 📈 Comparaison des modèles
-                st.write("### 📊 Comparaison des modèles")
-                fig, ax = plt.subplots(figsize=(8, 5))  # Ajuster la taille du graphique
-                cross_val_df.plot(x="Model", y=["Mean Recall", "Mean Precision", "Mean F1"], 
-                                  kind="bar", ax=ax, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
-                ax.set_xlabel("Modèles")
-                ax.set_ylabel("Score")
-                ax.set_title("Comparaison des scores des modèles")
-                ax.legend(title="Métriques", loc="upper right", fontsize=8)
-                ax.tick_params(axis="x", rotation=30)
-                st.pyplot(fig)
-            else:
-                st.error("❌ Aucun score trouvé pour ce modèle.")
-
+            SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/cross_val_results.csv"
+    try:
+        response = requests.get(SCORES_FILE_URL)
+        if response.status_code == 200:
+            cross_val_df = pd.read_csv(SCORES_FILE_URL)
+            scores = cross_val_df[cross_val_df['Model'] == selected_model_name]
+            st.dataframe(scores)
+            st.write("### 📊 Comparaison des modèles")
+            fig, ax = plt.subplots(figsize=(8, 5))  # Ajuster la taille du graphique
+            cross_val_df.plot(x="Model", y=["Mean Recall", "Mean Precision", "Mean F1"], 
+                          kind="bar", ax=ax, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
+            ax.set_xlabel("Modèles")
+            ax.set_ylabel("Score")
+            ax.set_title("Comparaison des scores des modèles")
+            ax.legend(title="Métriques", loc="upper right", fontsize=8)
+            ax.tick_params(axis="x", rotation=30)
+            st.pyplot(fig)
+        else:
+            st.error(f"❌ Erreur {response.status_code} : impossible de charger les résultats.")
+     except Exception as e:
+         st.error(f"❌ Erreur lors du chargement du fichier des scores : {e}")
         
 if page==pages[5]:
     st.title("Meilleur modèle 📥")
-    model = joblib.load("final_model.pkl")
-    performance_df = pd.read_csv("model_performance.csv")
-    conf_matrix_before = np.load("conf_matrix_before.npy")
-    conf_matrix_after = np.load("conf_matrix_after.npy")
-    conf_matrix_optimal = np.load("conf_matrix_optimal.npy")
-    feat_importance_before = pd.read_csv("feature_importance_before.csv")
-    feat_importance_after = pd.read_csv("feature_importance_after.csv")
+    BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/"
+    files = {
+    "model": "final_model.pkl",
+    "performance": "model_performance.csv",
+    "conf_matrix_before": "conf_matrix_before.npy",
+    "conf_matrix_after": "conf_matrix_after.npy",
+    "conf_matrix_optimal": "conf_matrix_optimal.npy",
+    "feat_importance_before": "feature_importance_before.csv",
+    "feat_importance_after": "feature_importance_after.csv",
+    "y_probs": "y_probs.npy",
+    "y_test": "y_test.npy"}
+    def load_file(url, is_numpy=False, is_pkl=False):
+        response = requests.get(url)
+        if response.status_code == 200:
+            if is_numpy:
+                return np.load(response.raw, allow_pickle=True)
+            elif is_pkl:
+                return joblib.load(response.raw)
+            else:
+                return pd.read_csv(url)
+        else:
+            st.error(f"❌ Erreur {response.status_code} : impossible de charger {url}")
+        return None
+
+    # 🔍 Chargement des fichiers
+    model = load_file(BASE_URL + files["model"], is_pkl=True)
+    performance_df = load_file(BASE_URL + files["performance"])
+    conf_matrix_before = load_file(BASE_URL + files["conf_matrix_before"], is_numpy=True)
+    conf_matrix_after = load_file(BASE_URL + files["conf_matrix_after"], is_numpy=True)
+    conf_matrix_optimal = load_file(BASE_URL + files["conf_matrix_optimal"], is_numpy=True)
+    feat_importance_before = load_file(BASE_URL + files["feat_importance_before"])
+    feat_importance_after = load_file(BASE_URL + files["feat_importance_after"])
+    y_probs = load_file(BASE_URL + files["y_probs"], is_numpy=True)
+    y_test = load_file(BASE_URL + files["y_test"], is_numpy=True)
+
     st.title("Optimisation du Modèle de Machine Learning")
     st.sidebar.header("Navigation")
     step = st.sidebar.radio("Sélectionnez une étape :", ["1️⃣ Performances", "2️⃣ Feature Importance", "3️⃣ Matrice de Confusion", "4️⃣ Courbe ROC"])
+
     if step == "1️⃣ Performances":
         st.subheader("Comparaison des Performances du Modèle")
-        st.dataframe(performance_df)
-        fig, ax = plt.subplots(figsize=(10, 5))
-        performance_df.set_index("Step").plot(kind="bar", ax=ax)
-        plt.title("Évolution des Scores")
-        plt.ylabel("Score")
-        plt.xticks(rotation=0)
-        st.pyplot(fig)
+        if performance_df is not None:
+            st.dataframe(performance_df)
+            fig, ax = plt.subplots(figsize=(10, 5))
+            performance_df.set_index("Step").plot(kind="bar", ax=ax)
+            plt.title("Évolution des Scores")
+            plt.ylabel("Score")
+            plt.xticks(rotation=0)
+            st.pyplot(fig)
+
     elif step == "2️⃣ Feature Importance":
         st.subheader("Importance des Features")
         choix = st.radio("Choisissez :", ["Avant Optimisation", "Après Optimisation"])
         feat_data = feat_importance_before if choix == "Avant Optimisation" else feat_importance_after
-        fig, ax = plt.subplots(figsize=(10, 5))
-        sns.barplot(data=feat_data.head(10), x="Importance", y="Variable", ax=ax, palette="Blues_r")
-        plt.title(f"Top Features ({choix})")
-        st.pyplot(fig)
+        if feat_data is not None:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            sns.barplot(data=feat_data.head(10), x="Importance", y="Variable", ax=ax, palette="Blues_r")
+            plt.title(f"Top Features ({choix})")
+            st.pyplot(fig)
+
     elif step == "3️⃣ Matrice de Confusion":
         st.subheader("Comparaison des Matrices de Confusion")
         choix = st.radio("Choisissez :", ["Avant Optimisation", "Après Hyperparamètres", "Après Seuil"])
         matrix = conf_matrix_before if choix == "Avant Optimisation" else conf_matrix_after if choix == "Après Hyperparamètres" else conf_matrix_optimal
-        fig, ax = plt.subplots()
-        ConfusionMatrixDisplay(matrix).plot(ax=ax, cmap='Blues')
-        plt.title(f"Matrice de Confusion ({choix})")
-        st.pyplot(fig)
+        if matrix is not None:
+            fig, ax = plt.subplots()
+            ConfusionMatrixDisplay(matrix).plot(ax=ax, cmap='Blues')
+            plt.title(f"Matrice de Confusion ({choix})")
+            st.pyplot(fig)
+
     elif step == "4️⃣ Courbe ROC":
         st.subheader("Courbe ROC et Seuil Optimal")
-        y_probs = np.load("y_probs.npy")
-        y_test = np.load("y_test.npy")
-        fpr, tpr, thresholds = roc_curve(y_test, y_probs)
-        roc_auc = auc(fpr, tpr)
-        best_f1 = 0
-        best_threshold = 0
-        for threshold in thresholds:
-            y_pred_temp = (y_probs > threshold).astype(int)
-            f1 = f1_score(y_test, y_pred_temp)
-            if f1 > best_f1:
-                best_f1 = f1
-                best_threshold = threshold
+        if y_probs is not None and y_test is not None:
+            fpr, tpr, thresholds = roc_curve(y_test, y_probs)
+            roc_auc = auc(fpr, tpr)
 
-        st.write(f"**Seuil optimal basé sur le F1-score** : {best_threshold:.2f}")
-        st.write(f"**Meilleur F1-score obtenu** : {best_f1:.4f}")
-        fig, ax = plt.subplots(figsize=(8, 6))
-        ax.plot(fpr, tpr, color='blue', label=f'ROC curve (AUC = {roc_auc:.2f})')
-        ax.plot([0, 1], [0, 1], color='gray', linestyle='--')
-        ax.set_xlabel('Taux de Faux Positifs')
-        ax.set_ylabel('Taux de Vrais Positifs')
-        ax.set_title('Courbe ROC')
-        ax.legend()
-        st.pyplot(fig)
+            best_f1 = 0
+            best_threshold = 0
+            for threshold in thresholds:
+                y_pred_temp = (y_probs > threshold).astype(int)
+                f1 = f1_score(y_test, y_pred_temp)
+                if f1 > best_f1:
+                    best_f1 = f1
+                    best_threshold = threshold
 
+            st.write(f"**Seuil optimal basé sur le F1-score** : {best_threshold:.2f}")
+            st.write(f"**Meilleur F1-score obtenu** : {best_f1:.4f}")
+
+            fig, ax = plt.subplots(figsize=(8, 6))
+            ax.plot(fpr, tpr, color='blue', label=f'ROC curve (AUC = {roc_auc:.2f})')
+            ax.plot([0, 1], [0, 1], color='gray', linestyle='--')
+            ax.set_xlabel('Taux de Faux Positifs')
+            ax.set_ylabel('Taux de Vrais Positifs')
+            ax.set_title('Courbe ROC')
+            ax.legend()
+            st.pyplot(fig)
+            
 if page == pages[6]:
    st.subheader("📝 Entrez les caractéristiques du client :")
    age = st.number_input("Âge", min_value=18, max_value=100, value=30)
@@ -382,15 +416,20 @@ if page == pages[6]:
    encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(one_hot_cols))
    user_data = pd.concat([user_data.drop(columns=one_hot_cols), encoded_df], axis=1)
    try:
-       model = joblib.load("final_model.pkl")
+       main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/"
+       model_path = os.path.join(main_dir, "final_model.pkl")
+       scaler_path = os.path.join(main_dir, "scaler.pkl")
+       model = joblib.load(model_path)
        expected_columns = model.feature_names_in_
        for col in expected_columns:
-        if col not in user_data.columns:
-            user_data[col] = 0
-       user_data = user_data[expected_columns]
-       scaler = joblib.load("scaler.pkl")
+           if col not in user_data.columns:
+               user_data[col] = 0
+        user_data = user_data[expected_columns]
+        
+       scaler = joblib.load(scaler_path)
        numerical_columns = ['age', 'balance', 'day', 'duration']
-       user_data[numerical_columns] = scaler.transform(user_data[numerical_columns])
+       existing_numerical_columns = [col for col in numerical_columns if col in user_data.columns]
+       user_data[existing_numerical_columns] = scaler.transform(user_data[existing_numerical_columns])
        if st.button("🔍 Prédire"):
            prediction = model.predict(user_data)[0]
            st.write("🔮 Prédiction brute :", prediction)
