@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -17,6 +18,8 @@ from sklearn.metrics import recall_score, precision_score, accuracy_score, f1_sc
 import joblib
 from sklearn.utils.validation import check_is_fitted
 import os
+from io import BytesIO
+
 
 df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/main/bank.csv")
 df.head()
