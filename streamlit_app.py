@@ -65,7 +65,7 @@ if page == pages[0]:
         {"nom": "Selle", "prenom": "Manon", "linkedin": "https://www.linkedin.com/in/manon-selle/"},
         {"nom": "Demeulemeester", "prenom": "Elyse", "linkedin": "https://www.linkedin.com/in/elyse-demeulemeester-aa41832b7/"},
         {"nom": "Amiel", "prenom": "Audrey", "linkedin": "https://www.linkedin.com/in/audrey-amiel/"},
-        {"nom": "Legrand", "prenom": "David", "linkedin": "https://www.linkedin.com/in/lucas-morel"}
+        {"nom": "Legrand", "prenom": "David", "linkedin": "https://www.linkedin.com/in/david-legrand-89bb63247/"}
     ]
 
     # 📌 Affichage des membres sur deux lignes
