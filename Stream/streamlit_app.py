@@ -20,6 +20,8 @@ from sklearn.utils.validation import check_is_fitted
 import os
 from io import BytesIO
 import io
+import os
+
 
 df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/bank.csv")
 df.head()
@@ -227,10 +229,7 @@ if page == pages[3]:
     # Affichage du dataset après nettoyage
     st.write("### Après nettoyage")
     df_clean=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/df_clean.csv")
-import os
-import joblib
-import pandas as pd
-import matplotlib.pyplot as plt
+
 
 if page == pages[4]:
     st.title("Modèles de Machine Learning 📥")
