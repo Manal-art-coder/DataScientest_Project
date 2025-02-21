@@ -226,7 +226,7 @@ if page == pages[3]:
     
     # Affichage du dataset après nettoyage
     st.write("### Après nettoyage")
-    df_clean=pd.read_csv("https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/Stream/df_clean.csv
+    df_clean=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/Stream/df_clean.csv")
 import os
 import joblib
 import pandas as pd
