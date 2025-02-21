@@ -290,7 +290,7 @@ if page == pages[4]:
 
 if page == pages[5]:
     st.title("Meilleur modèle 📥")
-    BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream"
+    BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/"
     files = {
         "model": "final_model.pkl",
         "performance": "model_performance.csv",
