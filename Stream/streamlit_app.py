@@ -21,7 +21,7 @@ import os
 from io import BytesIO
 import io
 
-df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/bank.csv")
+df=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/bank.csv")
 df.head()
 st.title("Prédiction du succès d'une campagne Marketing")
 st.sidebar.title("Sommaire")
@@ -33,7 +33,7 @@ if page == pages[0]:
     st.write("### 📌 Contexte & Enjeux")
     
     # Ajout d'une image d'illustration
-    st.image(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/Stream/Screenshot%202025-02-19%20111852.jpg", use_container_width=True)
+    st.image(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/Screenshot%202025-02-19%20111852.jpg", use_container_width=True)
     
     st.write("""
     Ce projet s’inscrit dans le cadre de notre formation de **Data Analyst** avec l’organisme **DataScientest**.  
@@ -226,7 +226,7 @@ if page == pages[3]:
     
     # Affichage du dataset après nettoyage
     st.write("### Après nettoyage")
-    df_clean=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/Stream/df_clean.csv")
+    df_clean=pd.read_csv(r"https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/df_clean.csv")
 import os
 import joblib
 import pandas as pd
@@ -238,7 +238,7 @@ if page == pages[4]:
     st.write("""Sélectionnez un modèle de Machine Learning entraîné et consultez ses performances.  
     Vous pouvez comparer plusieurs modèles et voir leurs scores de validation croisée.""")
 
-    MODEL_DIR_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/tree/dev/Models/"
+    MODEL_DIR_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Models/"
     model_files = ["AdaBoostClassifier.pkl", "BaggingClassifier.pkl", "DecisionTreeClassifier.pkl",
                    "GradientBoostingClassifier.pkl", "LogisticRegression.pkl", "RandomForestClassifier.pkl"]
 
@@ -263,7 +263,7 @@ if page == pages[4]:
 
         st.write(f"### Scores du modèle {selected_model_name}")
 
-    SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/blob/dev/Stream/cross_val_results.csv"
+    SCORES_FILE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/cross_val_results.csv"
     try:
         response = requests.get(SCORES_FILE_URL)
         if response.status_code == 200:
@@ -290,7 +290,7 @@ if page == pages[4]:
 
 if page == pages[5]:
     st.title("Meilleur modèle 📥")
-    BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/tree/dev/Stream"
+    BASE_URL = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream"
     files = {
         "model": "final_model.pkl",
         "performance": "model_performance.csv",
@@ -431,7 +431,7 @@ if page == pages[6]:
 
     # Chargement du modèle et du scaler depuis GitHub
     try:
-        main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/tree/dev/Stream"
+        main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream"
         model_url = main_dir + "final_model.pkl"
         scaler_url = main_dir + "scaler.pkl"
 
