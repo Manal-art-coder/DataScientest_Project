@@ -431,7 +431,7 @@ if page == pages[6]:
 
     # Chargement du modèle et du scaler depuis GitHub
     try:
-        main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream"
+        main_dir = "https://raw.githubusercontent.com/Manal-art-coder/DataScientest_Project/dev/Stream/"
         model_url = main_dir + "final_model.pkl"
         scaler_url = main_dir + "scaler.pkl"
 
