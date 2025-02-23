@@ -120,11 +120,11 @@ if page == pages[1]:
     st.subheader("Doublons dans le Dataset")
     if st.checkbox("Afficher les doublons 📋"):
         duplicate_rows = df[df.duplicated()]
-    if duplicate_rows.empty:
-        st.success("Aucun doublon trouvé dans le dataset ! ✅")
-    else:
-        st.write(f"Nombre de doublons : {duplicate_rows.shape[0]}")
-        st.dataframe(duplicate_rows)
+        if duplicate_rows.empty:
+            st.success("Aucun doublon trouvé dans le dataset ! ✅")
+        else:
+            st.write(f"Nombre de doublons : {duplicate_rows.shape[0]}")
+            st.dataframe(duplicate_rows)
 
 if page == pages[2]:
     st.title("Visualisation des Données 📊")
