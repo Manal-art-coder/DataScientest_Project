@@ -89,8 +89,6 @@ if page == pages[1]:
     st.subheader("Aperçu des premières lignes")
     st.write("Voici un aperçu des 10 premières lignes du jeu de données :")
     st.dataframe(df.head(10))
-
-    # Taille du dataset
     st.subheader("Taille du Dataset")
     st.write(f"**Nombre de lignes** : {df.shape[0]}")
     st.write(f"**Nombre de colonnes** : {df.shape[1]}")
@@ -99,26 +97,34 @@ if page == pages[1]:
     numerical_vars = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
     if st.button("Afficher les types des variables"):
         st.dataframe(df.dtypes.reset_index().rename(columns={"index": "Variable", 0: "Type"}))
-    if st.button("Afficher les variables catégorielles"):
-        st.write("### Variables Catégorielles")
-        st.write(categorical_vars)
-    if st.button("Afficher les variables numériques"):
-        st.write("### Variables Numériques")
-        st.write(numerical_vars)    
-
-    # Statistiques descriptives
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Afficher les variables catégorielles"):
+            st.write("### Variables Catégorielles")
+            st.write(categorical_vars)
+    with col2:
+        if st.button("Afficher les variables numériques"):
+            st.write("### Variables Numériques")
+            st.write(numerical_vars)
     st.subheader("Statistiques Descriptives")
-    st.write("Résumé statistique des variables numériques du dataset :")
-    st.dataframe(df.describe())
-
-    # Vérification des valeurs manquantes
+    if st.checkbox("Afficher les statistiques détaillées"):
+        st.write("Résumé statistique des variables numériques du dataset :")
+        st.dataframe(df.describe())
     st.subheader("Valeurs Manquantes")
     if st.checkbox("Afficher les valeurs manquantes 🔍"):
         missing_values = df.isna().sum()
         if missing_values.sum() == 0:
             st.success("Aucune valeur manquante dans le dataset ! ✅")
         else:
-            st.dataframe(missing_values[missing_values > 0])
+            st.dataframe(missing_values[missing_values > 0].reset_index().rename(columns={"index": "Variable", 0: "Nombre de valeurs manquantes"}))
+    st.subheader("Doublons dans le Dataset")
+    if st.checkbox("Afficher les doublons 📋"):
+        duplicate_rows = df[df.duplicated()]
+    if duplicate_rows.empty:
+        st.success("Aucun doublon trouvé dans le dataset ! ✅")
+    else:
+        st.write(f"Nombre de doublons : {duplicate_rows.shape[0]}")
+        st.dataframe(duplicate_rows)
 
 if page == pages[2]:
     st.title("Visualisation des Données 📊")
