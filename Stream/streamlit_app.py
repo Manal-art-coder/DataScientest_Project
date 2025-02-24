@@ -58,10 +58,10 @@ if page == pages[0]:
     📢 Ce projet permet ainsi de mieux comprendre les dynamiques des campagnes marketing et d'optimiser les stratégies commerciales ! 🚀
     """)
 
-    # 🔷 Section Équipe du Projet
+    #  Section Équipe du Projet
     st.write("### 👥 Équipe du Projet")
 
-    # 📌 Liste des membres de l'équipe
+    #  Liste des membres de l'équipe
     team_members = [
         {"nom": "Jewa", "prenom": "Manal", "linkedin": "https://www.linkedin.com/in/manaljewa/"},
         {"nom": "Selle", "prenom": "Manon", "linkedin": "https://www.linkedin.com/in/manon-selle/"},
@@ -70,7 +70,7 @@ if page == pages[0]:
         {"nom": "Legrand", "prenom": "David", "linkedin": "https://www.linkedin.com/in/david-legrand-89bb63247/"}
     ]
 
-    # 📌 Affichage des membres sur deux lignes
+    #  Affichage des membres sur deux lignes
     col1, col2, col3 = st.columns(3)  # Première ligne (3 colonnes)
     col4, col5 = st.columns(2)  # Deuxième ligne (2 colonnes)
 
@@ -272,7 +272,7 @@ if page == pages[4]:
     try:
         response = requests.get(SCORES_FILE_URL)
         if response.status_code == 200:
-            cross_val_df = pd.read_csv(BytesIO(response.content))  # ✅ Lire correctement le CSV
+            cross_val_df = pd.read_csv(BytesIO(response.content))  
             scores = cross_val_df[cross_val_df['Model'] == selected_model_name]
             st.dataframe(scores)
 
@@ -322,7 +322,7 @@ if page == pages[5]:
             st.error(f"❌ Erreur {response.status_code} : impossible de charger {url}")
             return None
 
-    # 🔍 Chargement des fichiers
+    #  Chargement des fichiers
     model = load_file(BASE_URL + files["model"], is_pkl=True)
     performance_df = load_file(BASE_URL + files["performance"])
     conf_matrix_before = load_file(BASE_URL + files["conf_matrix_before"], is_numpy=True)
