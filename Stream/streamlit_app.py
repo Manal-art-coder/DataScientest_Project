@@ -31,7 +31,7 @@ pages=["Contexte & enjeux", "Présentation des données", "Visualisation des don
 page=st.sidebar.radio("Aller vers", pages)
 
 if page == pages[0]: 
-    # 🔷 Section Contexte & Enjeux
+    # Section Contexte & Enjeux
     st.write("### 📌 Contexte & Enjeux")
     
     # Ajout d'une image d'illustration
@@ -82,7 +82,6 @@ if page == pages[0]:
             st.markdown(f"[LinkedIn]({member['linkedin']})")  # Lien vers le profil LinkedIn
 
 if page == pages[1]:
-    # Titre principal
     st.title("Présentation des données 📊")
 
     # Aperçu du dataset
